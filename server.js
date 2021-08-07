@@ -1,39 +1,19 @@
 const express = require("express");
 const PORT = process.env.PORT || 3001;
 const app = express();
-const mysql = require("mysql2");
-const inputCheck = require("./utils/inputCheck");
+const mysql = require("mysql");
+
+const db = require("./db/connection");
+const inquirer = require("inquirer");
+const view = require("./utils/view.js");
+// Adding new employees or roles
+const add = require("./utils/add.js");
+// Updating and deleting existing data
+const update = require("./utils/update.js");
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
-// app.get("/", (req, res) => {
-//   res.json({
-//     message: "Hello World",
-//   });
-// });
-
-// Get all employees
-app.get("/api/employees", (req, res) => {
-  const sql = `SELECT * FROM employees`;
-
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: "success",
-      data: rows,
-    });
-  });
-});
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
 
 // Connect to database
 const db = mysql.createConnection(
@@ -47,6 +27,11 @@ const db = mysql.createConnection(
   },
   console.log("Connected to the cms database.")
 );
+
+connection.connect(function (err) {
+  if (err) throw err;
+  start();
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
