@@ -5,7 +5,7 @@ const mysql = require("mysql");
 
 const db = require("./db/connection");
 const inquirer = require("inquirer");
-const view = require("./utils/view.js");
+const view = require("./utils/index.js");
 // Adding new employees or roles
 const add = require("./utils/add.js");
 // Updating and deleting existing data
