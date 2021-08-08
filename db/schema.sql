@@ -1,12 +1,7 @@
-CREATE TABLE employees (
-  id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
-  title VARCHAR(30) NOT NULL,
-  department VARCHAR(30) NOT NULL,
-  salary DECIMAL (10,2) NOT NULL,
-  manager VARCHAR(30) NOT NULL,
-);
+DROP DATABASE IF EXISTS cms;
+CREATE DATABASE cms;
+USE cms;
+
 CREATE TABLE department (
   id INTEGER NOT NULL AUTO_INCREMENT,
   name VARCHAR(30) NOT NULL,
@@ -20,4 +15,15 @@ CREATE TABLE role (
   department_id INTEGER,
   PRIMARY KEY (id),
   FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
+);
+
+CREATE TABLE employee (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
+  role_id INTEGER NOT NULL,
+  supervisor_id INTEGER,
+  PRIMARY KEY (id),
+  FOREIGN KEY (role_id) REFERENCES role(id),
+  FOREIGN KEY (supervisor_id) REFERENCES employee(id) ON DELETE SET NULL
 );
