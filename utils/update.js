@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 
-function removeEmployee(connection, cb) {
+function removeEmployee(connection, db) {
   connection.query("SELECT * FROM employee", function (err, results) {
     if (err) throw err;
     inquirer
@@ -9,11 +9,11 @@ function removeEmployee(connection, cb) {
           name: "removeEmployee",
           type: "list",
           choices: function () {
-            let choiceArray = [];
+            let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].first_name);
+              optionArray.push(results[i].first_name);
             }
-            return choiceArray;
+            return optionArray;
           },
           message: "Which employee would you like to remove?",
         },
@@ -33,7 +33,7 @@ function updateRole(connection, cb) {
   let newRole = {};
 
   connection.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
     function (err, results) {
       if (err) throw err;
       inquirer
@@ -42,11 +42,11 @@ function updateRole(connection, cb) {
             name: "updateEmployee",
             type: "list",
             choices: function () {
-              let choiceArray = [];
+              let optionArray = [];
               for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].first_name);
+                optionArray.push(results[i].first_name);
               }
-              return choiceArray;
+              return optionArray;
             },
             message: "Which employee would you like to update?",
           },
@@ -62,18 +62,16 @@ function updateRole(connection, cb) {
                   name: "updateRole",
                   type: "list",
                   choices: function () {
-                    let choiceArray = [];
+                    let optionArray = [];
                     for (var i = 0; i < results.length; i++) {
-                      choiceArray.push(results[i].title);
+                      optionArray.push(results[i].title);
                     }
-                    return choiceArray;
+                    return optionArray;
                   },
-                  message:
-                    "What would you like you to change their role title to?",
+                  message: "What is the new role?",
                 },
               ])
               .then(function (answer) {
-                // Translate role to role_id
                 connection.query(
                   "SELECT * FROM role WHERE title = ?",
                   answer.updateRole,
@@ -87,7 +85,7 @@ function updateRole(connection, cb) {
                       [newRole.role_id, newRole.first_name],
                       function (err, res) {
                         if (err) throw err;
-                        console.log("Employee role successfully updated.");
+                        console.log("new role successfully updated.");
                         cb();
                       }
                     );
@@ -104,7 +102,7 @@ function updateManager(connection, cb) {
   let newManager = {};
 
   connection.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
     function (err, results) {
       if (err) throw err;
       inquirer
@@ -113,50 +111,52 @@ function updateManager(connection, cb) {
             name: "updateEmployee",
             type: "list",
             choices: function () {
-              let choiceArray = [];
+              let optionArray = [];
               for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].first_name);
+                optionArray.push(results[i].first_name);
               }
-              return choiceArray;
+              return optionArray;
             },
-            message: "Which employee would you like to update?",
+            message: "Write down the employee's name would you like to update?",
           },
         ])
         .then(function (answer) {
-          newManager.first_name = answer.updateEmployee;
+          newSupervisor.first_name = answer.updateEmployee;
 
           connection.query("SELECT * FROM employee", function (err, res) {
             if (err) throw err;
             inquirer
               .prompt([
                 {
-                  name: "updateManager",
+                  name: "updateSupervisor",
                   type: "list",
                   choices: function () {
-                    let choiceArray = [];
+                    let optionArray = [];
                     for (var i = 0; i < results.length; i++) {
-                      choiceArray.push(results[i].first_name);
+                      optionArray.push(results[i].first_name);
                     }
-                    return choiceArray;
+                    return optionArray;
                   },
-                  message: "Who would you like to change their manager to?",
+                  message: "Who is the new supervisor for this employee?",
                 },
               ])
               .then(function (answer) {
                 connection.query(
                   "SELECT * FROM employee WHERE first_name = ?",
-                  answer.updateManager,
+                  answer.updateSupervisor,
                   function (err, results) {
                     if (err) throw err;
 
-                    newManager.manager_id = results[0].id;
+                    newSupervisor.supervisor_id = results[0].id;
 
                     connection.query(
-                      "UPDATE employee SET manager_id = ? WHERE first_name = ?",
-                      [newManager.manager_id, newManager.first_name],
+                      "UPDATE employee SET supervisor_id = ? WHERE first_name = ?",
+                      [newSupervisor.supervisor_id, newSupervisorr.first_name],
                       function (err, res) {
                         if (err) throw err;
-                        console.log("Employee manager successfully updated.");
+                        console.log(
+                          "Employee supervisor successfully updated."
+                        );
                         cb();
                       }
                     );
@@ -178,11 +178,11 @@ function removeRole(connection, cb) {
           name: "removeRole",
           type: "list",
           choices: function () {
-            let choiceArray = [];
+            let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].title);
+              optionArray.push(results[i].title);
             }
-            return choiceArray;
+            return optionArray;
           },
           message: "Which role would you like to remove?",
         },
@@ -207,11 +207,11 @@ function removeDepartment(connection, cb) {
           name: "removeDept",
           type: "list",
           choices: function () {
-            let choiceArray = [];
+            let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].name);
+              optionArray.push(results[i].name);
             }
-            return choiceArray;
+            return optionArray;
           },
           message: "Which department would you like to remove?",
         },
@@ -230,7 +230,7 @@ function removeDepartment(connection, cb) {
 module.exports = {
   removeEmployee: removeEmployee,
   updateRole: updateRole,
-  updateManager: updateManager,
+  updateSupervisor: updateSupervisor,
   removeRole: removeRole,
   removeDepartment: removeDepartment,
 };

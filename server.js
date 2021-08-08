@@ -6,9 +6,9 @@ const mysql = require("mysql");
 const db = require("./db/connection");
 const inquirer = require("inquirer");
 const view = require("./utils/index.js");
-// Adding new employees or roles
+// new employee / new role
 const add = require("./utils/add.js");
-// Updating and deleting existing data
+// update new
 const update = require("./utils/update.js");
 
 // Express middleware
@@ -33,9 +33,9 @@ connection.connect(function (err) {
   start();
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
 
 function start() {
   inquirer
@@ -46,10 +46,10 @@ function start() {
       choices: [
         "View All Employees",
         "View All Employees by Department",
-        "View All Employees by Manager",
+        "View All Employees by Supervisor",
         "Add Employee",
         "Update Employee Role",
-        "Update Employee Manager",
+        "Update Employee's Supervisor",
         "Remove Employee",
         "View All Roles",
         "Add Role",
@@ -70,8 +70,8 @@ function start() {
           view.viewEmployeeDept(connection, start);
           break;
 
-        case "View All Employees by Manager":
-          view.viewEmployeeMgr(connection, start);
+        case "View All Employees by Supervisor":
+          view.viewEmployeeSup(connection, start);
           break;
 
         case "Add Employee":
@@ -83,7 +83,7 @@ function start() {
           break;
 
         case "Update Employee Manager":
-          update.updateManager(connection, start);
+          update.updateSupervisor(connection, start);
           break;
 
         case "Remove Employee":

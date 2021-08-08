@@ -9,7 +9,6 @@ function addEmployee(connection, cb) {
         {
           name: "first_name",
           type: "input",
-          default: "Ann",
           message: "What is the employee's first name?",
           validate: function (answer) {
             if (answer.length < 1) {
@@ -21,7 +20,6 @@ function addEmployee(connection, cb) {
         {
           name: "last_name",
           type: "input",
-          default: "Pleasant",
           message: "What is the employee's last name?",
           validate: function (answer) {
             if (answer.length < 1) {
@@ -34,11 +32,11 @@ function addEmployee(connection, cb) {
           name: "role",
           type: "list",
           choices: function () {
-            let choiceArray = [];
+            let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].title);
+              optionArray.push(results[i].title);
             }
-            return choiceArray;
+            return optionArray;
           },
           message: "What is the employee's role?",
         },
@@ -47,7 +45,6 @@ function addEmployee(connection, cb) {
         newEmployee.first_name = answer.first_name;
         newEmployee.last_name = answer.last_name;
 
-        // Translate role to role_id
         connection.query(
           "SELECT * FROM role WHERE title = ?",
           answer.role,
@@ -64,26 +61,25 @@ function addEmployee(connection, cb) {
                 inquirer
                   .prompt([
                     {
-                      name: "manager_name",
+                      name: "supervisor_name",
                       type: "list",
                       choices: function () {
-                        let choiceArray = [];
+                        let optionArray = [];
                         for (var i = 0; i < results.length; i++) {
-                          choiceArray.push(results[i].first_name);
+                          optionArray.push(results[i].first_name);
                         }
-                        return choiceArray;
+                        return optionArray;
                       },
-                      message: "Who is the employee's manager?",
+                      message: "Who is the employee's supervisor?",
                     },
                   ])
                   .then(function (answer) {
-                    // Translate manager_name to id
                     connection.query(
                       "SELECT id FROM employee WHERE first_name = ?",
-                      answer.manager_name,
+                      answer.supervisor_name,
                       function (err, results) {
                         if (err) throw err;
-                        newEmployee.manager_id = results[0].id;
+                        newEmployee.supervisor_id = results[0].id;
                         console.log("Adding new employee: ", newEmployee);
 
                         connection.query(
@@ -112,13 +108,12 @@ function addRole(connection, cb) {
     inquirer
       .prompt([
         {
-          name: "role_title",
+          name: "title",
           type: "input",
-          default: "Lead Engineer",
-          message: "What is the role you would like to add?",
+          message: "What is the new title?",
           validate: function (answer) {
             if (answer.length < 1) {
-              return console.log("A valid role is required.");
+              return console.log("A valid title is required.");
             }
             return true;
           },
@@ -126,8 +121,7 @@ function addRole(connection, cb) {
         {
           name: "salary",
           type: "input",
-          default: "210000",
-          message: "What is the salary of the role?",
+          message: "What is the new salary?",
           validate: function (answer) {
             if (answer.length < 1) {
               return console.log("A valid salary is required.");
@@ -136,16 +130,16 @@ function addRole(connection, cb) {
           },
         },
         {
-          name: "dept_name",
+          name: "department",
           type: "list",
           choices: function () {
-            let choiceArray = [];
+            let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].name);
+              optionArray.push(results[i].name);
             }
-            return choiceArray;
+            return optionArray;
           },
-          message: "What is the role's department?",
+          message: "What is the title?",
         },
       ])
       .then(function (answer) {
@@ -182,7 +176,6 @@ function addDepartment(connection, cb) {
       {
         name: "dept_name",
         type: "input",
-        default: "Marketing",
         message: "What is the department you would like to add?",
         validate: function (answer) {
           if (answer.length < 1) {
