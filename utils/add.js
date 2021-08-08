@@ -53,7 +53,7 @@ function addEmployee(connection, cb) {
 
             newEmployee.role_id = results[0].id;
 
-            // Ask for manager
+            // Ask for supervisor
             connection.query(
               "SELECT * FROM employee;",
               function (err, results) {
@@ -146,7 +146,6 @@ function addRole(connection, cb) {
         newRole.title = answer.role_title;
         newRole.salary = answer.salary;
 
-        // Translate manager_name to id
         connection.query(
           "SELECT id FROM department WHERE name = ?",
           answer.dept_name,
@@ -174,7 +173,7 @@ function addDepartment(connection, cb) {
   inquirer
     .prompt([
       {
-        name: "dept_name",
+        name: "department",
         type: "input",
         message: "What is the department you would like to add?",
         validate: function (answer) {

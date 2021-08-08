@@ -3,7 +3,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const mysql = require("mysql");
 
-const db = require("./db/connection");
+// const db = require("./db/connection");
 const inquirer = require("inquirer");
 const view = require("./utils/index.js");
 // new employee / new role
@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Connect to database
-const db = mysql.createConnection(
+const connection = mysql.createConnection(
   {
     host: "localhost",
     // Your MySQL username,
@@ -25,7 +25,7 @@ const db = mysql.createConnection(
     password: "Americo01",
     database: "cms",
   },
-  console.log("Connected to the cms database.")
+  console.log("Connected to the CMS database.")
 );
 
 connection.connect(function (err) {
@@ -82,7 +82,7 @@ function start() {
           update.updateRole(connection, start);
           break;
 
-        case "Update Employee Manager":
+        case "Update Employee Supervisor":
           update.updateSupervisor(connection, start);
           break;
 
