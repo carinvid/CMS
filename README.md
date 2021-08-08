@@ -11,6 +11,12 @@ User can add a role,
 User can add an employee, 
 User can and update an employee role
 
+VIDEO DEMOSTRATION 
+
+https://user-images.githubusercontent.com/17866063/128624193-32114055-164e-4b72-96eb-fbfe10b1bd94.mp4
+
+
+
 INSTALLATION
 
 MySQL
