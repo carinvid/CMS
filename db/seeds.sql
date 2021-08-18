@@ -11,7 +11,7 @@ SELECT * FROM department;
 
 INSERT INTO role (title, salary, department_id)
 VALUES 
-("Supervisor", 40000, 5),
+("Manager", 40000, 5),
 ("Sales Lead", 35000, 2),
 ("HR Associate", 40000, 4),
 ("Software Engineer", 80000, 1),

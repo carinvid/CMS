@@ -1,16 +1,16 @@
 const inquirer = require("inquirer");
 
-function viewAllEmployees(connection, cb) {
+function viewAllEmployees(connection, kap) {
   let query =
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee as e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;";
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee as e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
-    cb();
+    kap();
   });
 }
 
-function viewEmployeeDept(connection, cb) {
+function viewEmployeeDept(connection, kap) {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     inquirer
@@ -31,25 +31,25 @@ function viewEmployeeDept(connection, cb) {
       .then(function (answer) {
         console.log(answer.department);
         let query =
-          "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee as e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id WHERE department.name = ? ORDER BY employee.id";
+          "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee as e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id WHERE department.name = ? ORDER BY employee.id";
         connection.query(query, answer.department, function (err, res) {
           if (err) throw err;
           console.table(res);
-          cb();
+          kap();
         });
       });
   });
 }
 
-function viewEmployeeSup(connection, cb) {
+function viewEmployeeManager(connection, kap) {
   connection.query(
-    "SELECT DISTINCT e2.first_name, e2.last_name FROM employee LEFT JOIN employee AS e2 ON employee.supervisor_id = e2.id WHERE e2.first_name IS NOT NULL",
+    "SELECT DISTINCT e2.first_name, e2.last_name FROM employee LEFT JOIN employee AS e2 ON employee.manager_id = e2.id WHERE e2.first_name IS NOT NULL",
     function (err, results) {
       if (err) throw err;
       inquirer
         .prompt([
           {
-            name: "supervisor",
+            name: "manager",
             type: "list",
             choices: function () {
               let optionArray = [];
@@ -58,33 +58,33 @@ function viewEmployeeSup(connection, cb) {
               }
               return optionArray;
             },
-            message: "Which supervisor would you like to see?",
+            message: "Which manager would you like to see?",
           },
         ])
         .then(function (answer) {
-          console.log(answer.supervisor);
+          console.log(answer.manager);
           let query =
-            "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id WHERE e2.first_name = ? ORDER BY employee.id;";
-          connection.query(query, answer.supervisor, function (err, res) {
+            "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id WHERE e2.first_name = ? ORDER BY employee.id;";
+          connection.query(query, answer.manager, function (err, res) {
             if (err) throw err;
             console.table(res);
-            cb();
+            kap();
           });
         });
     }
   );
 }
 
-function viewRoles(connection, cb) {
+function viewRoles(connection, kap) {
   let query = "SELECT * FROM role";
   connection.query(query, function (err, res) {
     if (err) throw err;
     console.table(res);
-    cb();
+    kap();
   });
 }
 
-function viewDepartments(connection, cb) {
+function viewDepartments(connection, kap) {
   let query = "SELECT * FROM department";
   connection.query(query, function (err, res) {
     if (err) throw err;
@@ -96,7 +96,7 @@ function viewDepartments(connection, cb) {
 module.exports = {
   viewAllEmployees: viewAllEmployees,
   viewEmployeeDept: viewEmployeeDept,
-  viewEmployeeSup: viewEmployeeSup,
+  viewEmployeeManager: viewEmployeeManager,
   viewRoles: viewRoles,
   viewDepartments: viewDepartments,
 };

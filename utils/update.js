@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 
-function removeEmployee(connection, cb) {
+function removeEmployee(connection, kap) {
   connection.query("SELECT * FROM employee", function (err, results) {
     if (err) throw err;
     inquirer
@@ -23,17 +23,17 @@ function removeEmployee(connection, cb) {
         connection.query(query, answer.removeEmployee, function (err, res) {
           if (err) throw err;
           console.log("Employee successfully deleted");
-          cb();
+          kap();
         });
       });
   });
 }
 
-function updateRole(connection, cb) {
+function updateRole(connection, kap) {
   let newRole = {};
 
   connection.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
     function (err, results) {
       if (err) throw err;
       inquirer
@@ -86,7 +86,7 @@ function updateRole(connection, cb) {
                       function (err, res) {
                         if (err) throw err;
                         console.log("new role successfully updated.");
-                        cb();
+                        kap();
                       }
                     );
                   }
@@ -98,11 +98,11 @@ function updateRole(connection, cb) {
   );
 }
 
-function updateSupervisor(connection, cb) {
-  let newSupervisor = {};
+function updateManager(connection, kap) {
+  let newManager = {};
 
   connection.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS supervisor FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.supervisor_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, e2.first_name AS manager FROM employee LEFT JOIN employee AS e2 ON e2.id = employee.manager_id JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id",
     function (err, results) {
       if (err) throw err;
       inquirer
@@ -121,14 +121,14 @@ function updateSupervisor(connection, cb) {
           },
         ])
         .then(function (answer) {
-          newSupervisor.first_name = answer.updateEmployee;
+          newManager.first_name = answer.updateEmployee;
 
           connection.query("SELECT * FROM employee", function (err, res) {
             if (err) throw err;
             inquirer
               .prompt([
                 {
-                  name: "updateSupervisor",
+                  name: "updateManager",
                   type: "list",
                   choices: function () {
                     let optionArray = [];
@@ -137,27 +137,25 @@ function updateSupervisor(connection, cb) {
                     }
                     return optionArray;
                   },
-                  message: "Who is the new supervisor for this employee?",
+                  message: "Who is the new manager for this employee?",
                 },
               ])
               .then(function (answer) {
                 connection.query(
                   "SELECT * FROM employee WHERE first_name = ?",
-                  answer.updateSupervisor,
+                  answer.updateManager,
                   function (err, results) {
                     if (err) throw err;
 
-                    newSupervisor.supervisor_id = results[0].id;
+                    newManager.manager_id = results[0].id;
 
                     connection.query(
                       "UPDATE employee SET supervisor_id = ? WHERE first_name = ?",
-                      [newSupervisor.supervisor_id, newSupervisor.first_name],
+                      [newManager.manager_id, newManager.first_name],
                       function (err, res) {
                         if (err) throw err;
-                        console.log(
-                          "Employee supervisor successfully updated."
-                        );
-                        cb();
+                        console.log("Employee's manager successfully updated.");
+                        kap();
                       }
                     );
                   }
@@ -169,7 +167,7 @@ function updateSupervisor(connection, cb) {
   );
 }
 
-function removeRole(connection, cb) {
+function removeRole(connection, kap) {
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
     inquirer
@@ -192,13 +190,13 @@ function removeRole(connection, cb) {
         connection.query(query, answer.removeRole, function (err, res) {
           if (err) throw err;
           console.log("Role successfully deleted");
-          cb();
+          kap();
         });
       });
   });
 }
 
-function removeDepartment(connection, cb) {
+function removeDepartment(connection, kap) {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     inquirer
@@ -221,7 +219,7 @@ function removeDepartment(connection, cb) {
         connection.query(query, answer.removeDept, function (err, res) {
           if (err) throw err;
           console.log("Department successfully deleted");
-          cb();
+          kap();
         });
       });
   });
@@ -230,7 +228,7 @@ function removeDepartment(connection, cb) {
 module.exports = {
   removeEmployee: removeEmployee,
   updateRole: updateRole,
-  updateSupervisor: updateSupervisor,
+  updateManager: updateManager,
   removeRole: removeRole,
   removeDepartment: removeDepartment,
 };

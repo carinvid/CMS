@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 
-function addEmployee(connection, cb) {
+function addEmployee(connection, kap) {
   let newEmployee = {};
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
@@ -10,23 +10,11 @@ function addEmployee(connection, cb) {
           name: "first_name",
           type: "input",
           message: "What is the employee's first name?",
-          validate: function (answer) {
-            if (answer.length < 1) {
-              return console.log("A valid first name is required.");
-            }
-            return true;
-          },
         },
         {
           name: "last_name",
           type: "input",
           message: "What is the employee's last name?",
-          validate: function (answer) {
-            if (answer.length < 1) {
-              return console.log("A valid last name is required.");
-            }
-            return true;
-          },
         },
         {
           name: "role",
@@ -53,7 +41,7 @@ function addEmployee(connection, cb) {
 
             newEmployee.role_id = results[0].id;
 
-            // Ask for supervisor
+            // Ask for manager
             connection.query(
               "SELECT * FROM employee;",
               function (err, results) {
@@ -61,7 +49,7 @@ function addEmployee(connection, cb) {
                 inquirer
                   .prompt([
                     {
-                      name: "supervisor_name",
+                      name: "manager_name",
                       type: "list",
                       choices: function () {
                         let optionArray = [];
@@ -70,16 +58,16 @@ function addEmployee(connection, cb) {
                         }
                         return optionArray;
                       },
-                      message: "Who is the employee's supervisor?",
+                      message: "Who is the employee's manager?",
                     },
                   ])
                   .then(function (answer) {
                     connection.query(
                       "SELECT id FROM employee WHERE first_name = ?",
-                      answer.supervisor_name,
+                      answer.manager_name,
                       function (err, results) {
                         if (err) throw err;
-                        newEmployee.supervisor_id = results[0].id;
+                        newEmployee.manager_id = results[0].id;
                         console.log("Adding new employee: ", newEmployee);
 
                         connection.query(
@@ -88,7 +76,7 @@ function addEmployee(connection, cb) {
                           function (err, results) {
                             if (err) throw err;
                             console.log("Employee successfully added.");
-                            cb();
+                            kap();
                           }
                         );
                       }
@@ -102,7 +90,7 @@ function addEmployee(connection, cb) {
   });
 }
 
-function addRole(connection, cb) {
+function addRole(connection, kap) {
   let newRole = {};
   connection.query("SELECT * FROM department", function (err, results) {
     inquirer
@@ -160,7 +148,7 @@ function addRole(connection, cb) {
               function (err, results) {
                 if (err) throw err;
                 console.log("Role successfully added.");
-                cb();
+                kap();
               }
             );
           }
@@ -169,19 +157,13 @@ function addRole(connection, cb) {
   });
 }
 
-function addDepartment(connection, cb) {
+function addDepartment(connection, kap) {
   inquirer
     .prompt([
       {
         name: "department",
         type: "input",
         message: "What is the department you would like to add?",
-        validate: function (answer) {
-          if (answer.length < 1) {
-            return console.log("A valid department name is required.");
-          }
-          return true;
-        },
       },
     ])
     .then(function (answer) {
@@ -191,7 +173,7 @@ function addDepartment(connection, cb) {
         function (err, results) {
           if (err) throw err;
           console.log("Department successfully added.");
-          cb();
+          kap();
         }
       );
     });

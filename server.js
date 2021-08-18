@@ -42,14 +42,14 @@ function start() {
     .prompt({
       name: "action",
       type: "list",
-      message: "What would you like to do?",
+      message: "Please make a selection",
       choices: [
         "View All Employees",
         "View All Employees by Department",
-        "View All Employees by Supervisor",
+        "View All Employees by Manager",
         "Add Employee",
         "Update Employee Role",
-        "Update Employee's Supervisor",
+        "Update Employee's Manager",
         "Remove Employee",
         "View All Roles",
         "Add Role",
