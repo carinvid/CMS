@@ -135,7 +135,7 @@ function addRole(connection, kap) {
         newRole.salary = answer.salary;
 
         connection.query(
-          "SELECT id FROM department WHERE name = ?",
+          "SELECT * FROM department WHERE name = ?",
           answer.dept_name,
           function (err, results) {
             if (err) throw err;
