@@ -25,7 +25,13 @@ const connection = mysql.createConnection(
     password: "Americo01",
     database: "cms",
   },
-  console.log("Connected to the CMS database.")
+  console.log("Connected to the CMS database."),
+  console.log("            "),
+  console.log(" ****  *      *  ***** "),
+  console.log(" *     * *  * *  *    "),
+  console.log(" *     *  *   *  ***** "),
+  console.log(" *     *  *   *      * "),
+  console.log(" ****  *      *  ***** ")
 );
 
 connection.connect(function (err) {

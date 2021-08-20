@@ -40,7 +40,7 @@ function addEmployee(connection, kap) {
             if (err) throw err;
 
             newEmployee.role_id = results[0].id;
-
+            console.log("Adding new role for employee: ", newEmployee);
             // Ask for manager
             connection.query(
               "SELECT * FROM employee;",
