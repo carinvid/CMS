@@ -70,8 +70,8 @@ function start() {
           view.viewEmployeeDept(connection, start);
           break;
 
-        case "View All Employees by Supervisor":
-          view.viewEmployeeSup(connection, start);
+        case "View All Employees by Manager":
+          view.viewEmployeeManager(connection, start);
           break;
 
         case "Add Employee":
@@ -82,8 +82,8 @@ function start() {
           update.updateRole(connection, start);
           break;
 
-        case "Update Employee Supervisor":
-          update.updateSupervisor(connection, start);
+        case "Update Employee Manager":
+          update.updateManager(connection, start);
           break;
 
         case "Remove Employee":
