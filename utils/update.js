@@ -117,7 +117,7 @@ function updateManager(connection, kap) {
               }
               return optionArray;
             },
-            message: "Write down the employee's name would you like to update?",
+            message: "who is the employee would you like to update?",
           },
         ])
         .then(function (answer) {
@@ -150,7 +150,7 @@ function updateManager(connection, kap) {
                     newManager.manager_id = results[0].id;
 
                     connection.query(
-                      "UPDATE employee SET supervisor_id = ? WHERE first_name = ?",
+                      "UPDATE employee SET manager_id = ? WHERE first_name = ?",
                       [newManager.manager_id, newManager.first_name],
                       function (err, res) {
                         if (err) throw err;
