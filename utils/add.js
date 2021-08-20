@@ -96,7 +96,7 @@ function addRole(connection, kap) {
     inquirer
       .prompt([
         {
-          name: "title",
+          name: "depart_name",
           type: "input",
           message: "What is the new title?",
           validate: function (answer) {
@@ -136,7 +136,7 @@ function addRole(connection, kap) {
 
         connection.query(
           "SELECT * FROM department WHERE name = ?",
-          answer.dept_name,
+          answer.depart_name,
           function (err, results) {
             if (err) throw err;
             newRole.department_id = results[0].id;
@@ -169,7 +169,7 @@ function addDepartment(connection, kap) {
     .then(function (answer) {
       connection.query(
         "INSERT INTO department (name) VALUES (?)",
-        answer.dept_name,
+        answer.depart_name,
         function (err, results) {
           if (err) throw err;
           console.log("Department successfully added.");

@@ -1,34 +1,5 @@
 const inquirer = require("inquirer");
 
-function removeEmployee(connection, kap) {
-  connection.query("SELECT * FROM employee", function (err, results) {
-    if (err) throw err;
-    inquirer
-      .prompt([
-        {
-          name: "removeEmployee",
-          type: "list",
-          choices: function () {
-            let optionArray = [];
-            for (var i = 0; i < results.length; i++) {
-              optionArray.push(results[i].first_name);
-            }
-            return optionArray;
-          },
-          message: "Which employee would you like to remove?",
-        },
-      ])
-      .then(function (answer) {
-        let query = "DELETE FROM employee WHERE first_name = ?";
-        connection.query(query, answer.removeEmployee, function (err, res) {
-          if (err) throw err;
-          console.log("Employee successfully deleted");
-          kap();
-        });
-      });
-  });
-}
-
 function updateRole(connection, kap) {
   let newRole = {};
 
@@ -166,6 +137,34 @@ function updateManager(connection, kap) {
     }
   );
 }
+function removeEmployee(connection, kap) {
+  connection.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          name: "removeEmployee",
+          type: "list",
+          choices: function () {
+            let optionArray = [];
+            for (var i = 0; i < results.length; i++) {
+              optionArray.push(results[i].first_name);
+            }
+            return optionArray;
+          },
+          message: "Which employee would you like to remove?",
+        },
+      ])
+      .then(function (answer) {
+        let query = "DELETE FROM employee WHERE first_name = ?";
+        connection.query(query, answer.removeEmployee, function (err, res) {
+          if (err) throw err;
+          console.log("Employee successfully deleted");
+          kap();
+        });
+      });
+  });
+}
 
 function removeRole(connection, kap) {
   connection.query("SELECT * FROM role", function (err, results) {
@@ -207,7 +206,7 @@ function removeDepartment(connection, kap) {
           choices: function () {
             let optionArray = [];
             for (var i = 0; i < results.length; i++) {
-              optionArray.push(results[i].name);
+              optionArray.push(results[i].department.name);
             }
             return optionArray;
           },
